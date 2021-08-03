@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Grid</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/style.css">
+
+</head>
+<body>
+<th:block th:include="includes/header.html"></th:block>
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-4">
+            <img th:src="'/uploads/' + ${profile.getAvatar()}" style="width: 100%; border-radius: 50%; height: 100%;"
+                 alt="">
+        </div>
+        <div class="col-8">
+            <h3 th:text="${profile.getUsername()}" style="font-weight: 300"/>
+            <h5 th:text="${profile.getFirst_name()} + ' ' + ${profile.getLast_name()}"></h5>
+            <div>
+                <h6 style="display: inline-block">
+                    <strong th:text="${profile.getPosts().size()}"/> posts
+                </h6>
+                <h6 style="display: inline-block">
+                    <strong th:text="${profile.getSubscribers().size()}" id="followers-counter"/> followers
+                </h6>
+            </div>
+
+            <input type="hidden" name="subId" th:value="${user.getId()}">
+            <input type="hidden" name="userId" th:value="${profile.getId()}">
+            <button th:if="${user.getUsername() != profile.getUsername() AND !subscriberRepository.ifUserIsSubscriber(user, profile)}"
+                    type="button"
+                    class="btn btn-primary follow">
+                Follow
+            </button>
+
+            <p th:text="${profile.getBio()}"/>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-4 post" th:data-name="${post.getUser().getUsername()}" th:data-id="${post.getId()}"
+             th:data-text="${post.getText()}" style="padding: 1px"
+             th:each="post : ${posts}">
+            <a type="button" data-toggle="modal" data-target="#modalLong">
+                <div>
+                    <div th:each="postItem : ${post.getPostItems()}" th:id="'photos-'+${post.getId()}">
+                        <img th:src="'/uploads/'+${postItem.getItemFileName()}" style="width: 100%;height: 100%;"
+                             alt="">
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLongTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div id="user_id" th:text="${user.getId()}"/>
+<div id="profile_id" th:text="${profile.getId()}"/>
+<script src="/js/scripts.js"></script>
+</body>
+</html>

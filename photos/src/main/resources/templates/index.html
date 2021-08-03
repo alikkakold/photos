@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Grid</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/style.css">
+</head>
+<body>
+<th:block th:include="includes/header.html"></th:block>
+
+
+<div th:if="${#httpServletRequest.remoteUser}">
+    <div class="container mt-5 mb-5">
+        <div class="posts"></div>
+    </div>
+
+
+    <p style="display: none" id="user_id" th:text="${user.getId()}"/>
+
+    <script src="/js/scripts.js"></script>
+
+    <script>
+        APIRequest(`/api/users/${$('#user_id').text()}/feed`, function (posts) {
+            console.log(posts);
+            console.log($('#user_id').text());
+            for (let post of posts) {
+                let photos = '';
+                for (let photo of post.postItems) {
+                    photos += `
+                        <img style="width: 100%;" src="/uploads/${photo.itemFileName}" alt="">
+                `;
+                }
+                // <!-- -->
+
+                $('.posts').append(`
+                <div class="background-white container-radius mt-2">
+                    <h5>${post.user.username}</h5>
+                    <hr>
+                    <div>
+                        ${photos}
+                    </div>
+                </div>
+            `);
+            }
+        });
+    </script>
+</div>
+
+<div th:unless="${#httpServletRequest.remoteUser}">
+    <h3 style="margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);" id="welcome-text"></h3>
+</div>
+
+<script src="/js/scripts.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#welcome-text").text(["Hello!", "Привет!", "How is it going?))", "Как дела?))"][getRandomInt(0, 3)]);
+
+        setInterval(() => {
+            $("#welcome-text").text(["Hello!", "Привет!", "How is it going?))", "Как дела?))"][getRandomInt(0, 3)]);
+        }, 2000)
+
+    });
+</script>
+
+
+</body>
+</html>
